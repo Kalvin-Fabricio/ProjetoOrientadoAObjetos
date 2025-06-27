@@ -1,6 +1,11 @@
 import java.util.*;
 
+
 public class Usuario {
+    public static final String FAVORITOS = "favoritos";
+    public static final String LIDAS = "lidas";
+    public static final String PARA_LER_DEPOIS = "paraLerDepois";
+
     private String nome;
     private Map<String, Noticia> favoritos;
     private Map<String, Noticia> lidas;
@@ -20,25 +25,29 @@ public class Usuario {
 
     public void adicionarNoticia(String lista, Noticia noticia) {
         switch (lista) {
-            case "favoritos": favoritos.put(noticia.getId(), noticia); break;
-            case "lidas": lidas.put(noticia.getId(), noticia); break;
-            case "paraLerDepois": paraLerDepois.put(noticia.getId(), noticia); break;
+            case FAVORITOS: favoritos.put(noticia.getId(), noticia); break;
+            case LIDAS: lidas.put(noticia.getId(), noticia); break;
+            case PARA_LER_DEPOIS: paraLerDepois.put(noticia.getId(), noticia); break;
+            default: 
+                throw new IllegalArgumentException("Lista inválida: " + lista);
         }
     }
 
     public void removerNoticia(String lista, String idNoticia) {
         switch (lista) {
-            case "favoritos": favoritos.remove(idNoticia); break;
-            case "lidas": lidas.remove(idNoticia); break;
-            case "paraLerDepois": paraLerDepois.remove(idNoticia); break;
+            case FAVORITOS: favoritos.remove(idNoticia); break;
+            case LIDAS: lidas.remove(idNoticia); break;
+            case PARA_LER_DEPOIS: paraLerDepois.remove(idNoticia); break;
+            default:
+                throw new IllegalArgumentException("Lista inválida: " + lista);
         }
     }
 
     public List<Noticia> getLista(String lista) {
         switch (lista) {
-            case "favoritos": return new ArrayList<>(favoritos.values());
-            case "lidas": return new ArrayList<>(lidas.values());
-            case "paraLerDepois": return new ArrayList<>(paraLerDepois.values());
+            case FAVORITOS: return new ArrayList<>(favoritos.values());
+            case LIDAS: return new ArrayList<>(lidas.values());
+            case PARA_LER_DEPOIS: return new ArrayList<>(paraLerDepois.values());
             default: return new ArrayList<>();
         }
     }

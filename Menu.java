@@ -1,6 +1,7 @@
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 public class Menu {
     private Usuario usuario;
     private Map<String, Usuario> usuariosSalvos;
@@ -54,6 +55,22 @@ public class Menu {
         Armazenamento.salvar(usuariosSalvos);
     }
 
+    private String escolherLista(Scanner sc, String acao) {
+        System.out.println("|       --Qual lista deseja " + acao + "?--        |");
+        System.out.println("| 1 - Lista de favoritos\n| 2 - Lista de 'ja lidas'\n| 3 - Lista 'para ler depois'");
+        System.out.print("|\n| Opcao: ");
+        String op = sc.nextLine().trim();
+        switch (op) {
+            case "1": return Usuario.FAVORITOS;
+            case "2": return Usuario.LIDAS;
+            case "3": return Usuario.PARA_LER_DEPOIS;
+            default:
+                System.out.println("|--                                           --|");
+                System.out.println("| Opcao invalida.");
+                return null;
+        }
+    }
+
     private void buscarNoticias(Scanner sc) {
         System.out.print("| Buscar por termo: ");
         String termo = sc.nextLine().trim();
@@ -66,7 +83,7 @@ public class Menu {
             return;
         }
 
-        for (int i = 1; i < noticias.size(); i++) {
+        for (int i = 0; i < noticias.size(); i++) {
             System.out.println("| " + i + " - " + noticias.get(i).getTitulo() + " (ID: " + noticias.get(i).getId() + ")");
         }
         System.out.print("| \n| Ver detalhes de qual noticia? ('Enter' para voltar): ");
@@ -77,25 +94,16 @@ public class Menu {
                 System.out.println("|--                                           --|");
                 System.out.println("| Resultado da busca:                           |");
                 System.out.println(noticias.get(i));
+            } else {
+                System.out.println("| Indice fora do intervalo.");
             }
         }
-        
     }
 
     private void gerenciarListas(Scanner sc) {
-        System.out.println("|       --Qual lista deseja gerenciar?--        |");
-        System.out.println("| 1 - Lista de favoritos\n| 2 - Lista de 'ja lidas'\n| 3 - Lista 'para ler depois'");
-        System.out.print("|\n| Opcao: ");
-        String op = sc.nextLine().trim();
-        String lista = "";
-        if (op.equals("1")) lista = "favoritos";
-        else if (op.equals("2")) lista = "lidas";
-        else if (op.equals("3")) lista = "paraLerDepois";
-        else {
-            System.out.println("|--                                           --|");
-            System.out.println("| Opcao invalida.");
-            return;
-        }
+        String lista = escolherLista(sc, "gerenciar");
+        if (lista == null) return;
+
         System.out.println("|--                                           --|");
         System.out.print("| Digite um termo para buscar noticias: ");
         String termo = sc.nextLine().trim();
@@ -105,7 +113,7 @@ public class Menu {
             System.out.println("| Nenhuma noticia encontrada.");
             return;
         }
-        for (int i = 1; i < noticias.size(); i++) {
+        for (int i = 0; i < noticias.size(); i++) {
             System.out.println("| " + i + " - " + noticias.get(i).getTitulo() + " (ID: " + noticias.get(i).getId() + ")");
         }
         System.out.print("|\n| Digite o indice da noticia para adicionar/remover: ");
@@ -124,9 +132,9 @@ public class Menu {
         Noticia noticia = noticias.get(i);
 
         Map<String, Noticia> listaMap = null;
-        if (lista.equals("favoritos")) listaMap = usuario.getFavoritos();
-        else if (lista.equals("lidas")) listaMap = usuario.getLidas();
-        else if (lista.equals("paraLerDepois")) listaMap = usuario.getParaLerDepois();
+        if (Usuario.FAVORITOS.equals(lista)) listaMap = usuario.getFavoritos();
+        else if (Usuario.LIDAS.equals(lista)) listaMap = usuario.getLidas();
+        else if (Usuario.PARA_LER_DEPOIS.equals(lista)) listaMap = usuario.getParaLerDepois();
 
         System.out.println("|--                                           --|");
         if (listaMap.containsKey(noticia.getId())) {
@@ -136,37 +144,28 @@ public class Menu {
             usuario.adicionarNoticia(lista, noticia);
             System.out.println("| Adicionado a lista.");
         }
+        salvarUsuarioAtual();
     }
 
     private void exibirListas(Scanner sc) {
-        System.out.println("|         --Qual lista deseja exibir?--         |");
-        System.out.println("| 1 - Lista de favoritos\n| 2 - Lista de 'ja lidas'\n| 3 - Lista 'para ler depois'");
-        System.out.print("|\n| Opcao: ");
-        String op = sc.nextLine().trim();
+        String lista = escolherLista(sc, "exibir");
+        if (lista == null) return;
         System.out.println("|--                                           --|");
-        List<Noticia> lista = new ArrayList<>();
-        if (op.equals("1")) lista = usuario.getLista("favoritos");
-        else if (op.equals("2")) lista = usuario.getLista("lidas");
-        else if (op.equals("3")) lista = usuario.getLista("paraLerDepois");
-        else {
-            System.out.println("| Opção invalida.");
-            return;
-        }
 
-        if (lista.isEmpty()) {
+        List<Noticia> listaNoticias = usuario.getLista(lista);
+
+        if (listaNoticias.isEmpty()) {
             System.out.println("| Lista vazia.");
             return;
         }
-        for (Noticia n : lista) {
+        for (Noticia n : listaNoticias) {
             System.out.println(n);
         }
     }
 
     private void ordenarListas(Scanner sc) {
-        System.out.println("|         --Qual lista deseja ordenar?--        |");
-        System.out.println("| 1 - Lista de favoritos\n| 2 - Lista de 'ja lidas'\n| 3 - Lista 'para ler depois'");
-        System.out.print("|\n| Opcao: ");
-        String listaOp = sc.nextLine().trim();
+        String lista = escolherLista(sc, "ordenar");
+        if (lista == null) return;
         System.out.println("|--                                           --|");
         System.out.println("|           --Como ordenar a lista?--           |");
         System.out.println("| 1 - Titulo\n| 2 - Data de publicação\n| 3 - Tipo ou categoria");
@@ -174,24 +173,21 @@ public class Menu {
         String ordOp = sc.nextLine().trim();
         System.out.println("|--                                           --|");
 
-        List<Noticia> lista;
-        if (listaOp.equals("1")) lista = usuario.getLista("favoritos");
-        else if (listaOp.equals("2")) lista = usuario.getLista("lidas");
-        else if (listaOp.equals("3")) lista = usuario.getLista("paraLerDepois");
-        else {
-            System.out.println("Opção invalida.");
-            return;
+        List<Noticia> listaNoticias = usuario.getLista(lista);
+
+        Comparator<Noticia> comparator;
+        switch (ordOp) {
+            case "1": comparator = Comparator.comparing(Noticia::getTitulo, String.CASE_INSENSITIVE_ORDER); break;
+            case "2": comparator = Comparator.comparing(Noticia::getDataPublicacao); break;
+            case "3": comparator = Comparator.comparing(Noticia::getTipo, String.CASE_INSENSITIVE_ORDER); break;
+            default:
+                System.out.println("Opção invalida.");
+                return;
         }
 
-        Comparator<Noticia> comparator = (a, b) -> 0;
-        if (ordOp.equals("1")) comparator = Comparator.comparing(Noticia::getTitulo, String.CASE_INSENSITIVE_ORDER);
-        else if (ordOp.equals("2")) comparator = Comparator.comparing(Noticia::getDataPublicacao);
-        else if (ordOp.equals("3")) comparator = Comparator.comparing(Noticia::getTipo, String.CASE_INSENSITIVE_ORDER);
-
-        lista = lista.stream().sorted(comparator).collect(Collectors.toList());
-        for (Noticia n : lista) {
+        listaNoticias = listaNoticias.stream().sorted(comparator).collect(Collectors.toList());
+        for (Noticia n : listaNoticias) {
             System.out.println(n);
         }
     }
-
 }

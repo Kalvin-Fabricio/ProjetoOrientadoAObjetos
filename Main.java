@@ -1,6 +1,7 @@
 import java.util.Map;
 import java.util.Scanner;
 
+
 public class Main {
     public static void main(String[] args) {
         Map<String, Usuario> usuarios = Armazenamento.carregar();
@@ -28,4 +29,3 @@ public class Main {
         menu.exibir();
     }
 }
-

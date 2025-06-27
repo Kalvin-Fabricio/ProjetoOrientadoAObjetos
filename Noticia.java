@@ -1,7 +1,8 @@
 import java.util.Objects;
 
+
 public class Noticia {
-    private String id; // ID da notícia
+    private String id;
     private String titulo;
     private String introducao;
     private String dataPublicacao;
