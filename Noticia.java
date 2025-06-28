@@ -1,6 +1,5 @@
 import java.util.Objects;
 
-
 public class Noticia {
     private String id;
     private String titulo;

@@ -3,7 +3,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import com.google.gson.*;
 
-
 public class Armazenamento {
     private static final String ARQUIVO = "usuarios_ibge.json";
 
